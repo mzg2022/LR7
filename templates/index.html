@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курсы валют</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Текущие курсы валют</h1>
+    <p>Ваш идентификатор: <span id="client_id">Загрузка...</span></p>
+    <div id="rates" class="mt-4"></div>
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">Выйти</a>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on('currency_update', (data) => {
+        document.getElementById("client_id").textContent = data.client_id || "Неизвестный ID";
+        const ratesDiv = document.getElementById('rates');
+        ratesDiv.innerHTML = ''; // Очищаем текущее содержимое
+
+        // Обходим объект rates и отображаем каждую валюту
+        for (const [currency, info] of Object.entries(data.rates)) {
+            ratesDiv.innerHTML += `<div class="card mt-2"><div class="card-body"><h5 class="card-title">${info.Name} (${currency})</h5><p class="card-text">Курс: ${info.Value}</p></div></div>`;
+        }
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
